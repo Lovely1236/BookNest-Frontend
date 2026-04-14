@@ -40,18 +40,18 @@ export const NotificationsPage: React.FC = () => {
           {notifications.map((n) => (
             <div
               key={n.notificationId}
-              onClick={() => !n.isRead && markAsRead(n.notificationId)}
+              onClick={() => !n.read && markAsRead(n.notificationId)}
               className={`p-4 rounded-xl border cursor-pointer transition-colors ${
-                !n.isRead
+                !n.read
                   ? 'bg-blue-50 border-blue-100 hover:bg-blue-100/50'
                   : 'bg-white border-gray-100 hover:bg-gray-50'
               }`}
             >
               <div className="flex items-start justify-between gap-3">
-                <p className={`text-sm ${!n.isRead ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
+                <p className={`text-sm ${!n.read ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
                   {n.message}
                 </p>
-                {!n.isRead && (
+                {!n.read && (
                   <span className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                 )}
               </div>

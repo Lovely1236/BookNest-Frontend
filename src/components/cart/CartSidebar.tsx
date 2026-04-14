@@ -1,14 +1,20 @@
 import React from 'react';
 import { X, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUIStore } from '../../stores/uiStore';
 import { useCart } from '../../hooks/useCart';
 import { CartItem } from './CartItem';
 import { CartSummary } from './CartSummary';
 
 export const CartSidebar: React.FC = () => {
+  const navigate = useNavigate();
   const { cartOpen, setCartOpen } = useUIStore();
   const { items, totalPrice, itemCount, removeFromCart, updateQuantity } = useCart();
+
+  const handleCheckout = () => {
+    setCartOpen(false);
+    navigate('/checkout');
+  };
 
   if (!cartOpen) return null;
 
@@ -73,7 +79,7 @@ export const CartSidebar: React.FC = () => {
             <CartSummary
               itemCount={itemCount}
               totalPrice={totalPrice}
-              onCheckout={() => setCartOpen(false)}
+              onCheckout={handleCheckout}
             />
             <Link
               to="/books"

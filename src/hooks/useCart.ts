@@ -58,7 +58,12 @@ export const useCart = () => {
     mutationFn: cartService.clearCart,
     onSuccess: () => {
       clearLocalCart();
-      queryClient.setQueryData(['cart'], null);
+      // Clear and invalidate the query cache immediately
+      queryClient.setQueryData(['cart'], { cartId: null, items: [] });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+    onError: () => {
+      toast.error('Failed to clear cart');
     },
   });
 

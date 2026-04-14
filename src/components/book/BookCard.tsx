@@ -14,7 +14,7 @@ interface BookCardProps {
 
 export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const { isAuthenticated } = useAuthStore();
-  const { addToCart, isAdding } = useCart();
+  const { addToCart, isAdding, items: cartItems } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const placeholder = useMemo(
@@ -26,6 +26,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   const inWishlist = isInWishlist(book.bookId);
   const outOfStock = book.stock === 0;
+  const isInCart = cartItems.some((item) => item.bookId === book.bookId);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -104,14 +105,25 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         <div className="mt-3 flex items-center justify-between">
           <span className="font-bold text-gray-900">{formatCurrency(book.price)}</span>
           {isAuthenticated && (
-            <button
-              onClick={handleAddToCart}
-              disabled={outOfStock || isAdding}
-              className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              <ShoppingCart className="w-3 h-3" />
-              {outOfStock ? 'Sold Out' : 'Add'}
-            </button>
+            isInCart ? (
+              <Link
+                to="/cart"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <ShoppingCart className="w-3 h-3" />
+                Go to Cart
+              </Link>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                disabled={outOfStock || isAdding}
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                <ShoppingCart className="w-3 h-3" />
+                {outOfStock ? 'Sold Out' : 'Add'}
+              </button>
+            )
           )}
         </div>
       </div>

@@ -3,7 +3,7 @@ export interface Order {
   userId: number;
   orderDate: string;
   amountPaid: number;
-  modeOfPayment: 'COD' | 'ONLINE';
+  modeOfPayment: 'COD' | 'ONLINE' | 'STRIPE';
   orderStatus: 'PLACED' | 'CONFIRMED' | 'DISPATCHED' | 'DELIVERED' | 'CANCELLED';
   quantity: number;
   confirmedDate?: string;
@@ -36,5 +36,6 @@ export interface Address {
 export interface PlaceOrderPayload {
   cartId: number;
   addressId: number;
-  modeOfPayment: 'COD' | 'ONLINE';
+  modeOfPayment: 'COD' | 'ONLINE' | 'STRIPE';
+  amount?: number;
 }

@@ -3,6 +3,6 @@ export interface Notification {
   userId: number;
   type: string;
   message: string;
-  isRead: boolean;
+  read: boolean;
   createdAt: string;
 }

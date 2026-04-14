@@ -9,6 +9,7 @@ import { usePlaceOrder } from '../hooks/useOrders';
 import { addressSchema, AddressFormData } from '../utils/validation';
 import { formatCurrency } from '../utils/formatters';
 import { PAYMENT_MODES } from '../utils/constants';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 
 type Step = 'address' | 'payment' | 'review';
@@ -23,10 +24,10 @@ export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('address');
   const [addressData, setAddressData] = useState<AddressFormData | null>(null);
-  const [paymentMode, setPaymentMode] = useState<'COD' | 'ONLINE'>('COD');
+  const [paymentMode, setPaymentMode] = useState<'COD' | 'ONLINE' | 'STRIPE'>('COD');
 
-  const { items, totalPrice, itemCount, cartId, clearCart } = useCart();
-  const { data: wallet } = useWallet();
+  const { items, totalPrice, itemCount, cartId, isLoading: cartLoading, clearCart } = useCart();
+  const { data: wallet, isLoading: walletLoading } = useWallet();
   const { mutate: placeOrder, isPending } = usePlaceOrder();
 
   const {
@@ -55,17 +56,32 @@ export const CheckoutPage: React.FC = () => {
       toast.error('Insufficient wallet balance');
       return;
     }
-    placeOrder(
-      { cartId, addressId: 1, modeOfPayment: paymentMode === 'ONLINE' ? 'ONLINE' : 'COD' },
-      {
-        onSuccess: (order) => {
-          clearCart();
+    
+    const mode: 'COD' | 'ONLINE' | 'STRIPE' = paymentMode === 'ONLINE' ? 'ONLINE' : paymentMode === 'STRIPE' ? 'STRIPE' : 'COD';
+    const orderPayload = { cartId, addressId: 1, modeOfPayment: mode, amount: grandTotal };
+    console.log('Placing order with payload:', orderPayload);
+    
+    placeOrder(orderPayload, {
+      onSuccess: (order) => {
+        console.log('Order placed successfully:', order);
+        // Clear cart after successful order placement
+        clearCart();
+        if (paymentMode === 'STRIPE') {
+          navigate(`/payment/stripe/${order.orderId}`);
+        } else {
           navigate(`/orders/${order.orderId}`);
-          toast.success('Order placed successfully!');
-        },
-      }
-    );
+        }
+        toast.success('Order placed successfully!');
+      },
+      onError: (error: any) => {
+        console.error('Order placement failed:', error);
+      },
+    });
   };
+
+  if (cartLoading || walletLoading) {
+    return <LoadingSpinner fullPage />;
+  }
 
   if (items.length === 0) {
     return (
@@ -167,7 +183,7 @@ export const CheckoutPage: React.FC = () => {
                       type="radio"
                       value={mode.value}
                       checked={paymentMode === mode.value}
-                      onChange={() => setPaymentMode(mode.value as 'COD' | 'ONLINE')}
+                      onChange={() => setPaymentMode(mode.value as 'COD' | 'ONLINE' | 'STRIPE')}
                       className="text-blue-600"
                     />
                     <span className="font-medium text-gray-900">{mode.label}</span>
@@ -204,8 +220,14 @@ export const CheckoutPage: React.FC = () => {
               )}
 
               <div className="bg-gray-50 rounded-lg p-3 text-sm">
-                <p className="font-medium text-gray-900 mb-1">Payment</p>
-                <p className="text-gray-600">{paymentMode === 'COD' ? 'Cash on Delivery' : 'E-Wallet'}</p>
+                <p className="font-medium text-gray-900 mb-1">Payment Method</p>
+                <p className="text-gray-600">
+                  {paymentMode === 'COD' 
+                    ? 'Cash on Delivery' 
+                    : paymentMode === 'ONLINE' 
+                    ? 'E-Wallet Payment' 
+                    : 'Stripe Payment'}
+                </p>
               </div>
 
               <div className="space-y-2">

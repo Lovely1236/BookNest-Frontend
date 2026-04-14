@@ -55,10 +55,10 @@ export const StockAlert: React.FC = () => {
       )}
 
       <Link
-        to="/admin/inventory"
+        to="/admin/catalog"
         className="block text-center text-sm text-blue-600 hover:text-blue-700 mt-4"
       >
-        Manage Inventory
+        Manage Catalog
       </Link>
     </div>
   );

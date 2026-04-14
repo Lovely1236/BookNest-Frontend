@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { wishlistService } from '../services/api/wishlistService';
+import { notificationService } from '../services/api/notificationService';
 import { Book } from '../types/book';
 import { useAuthStore } from '../stores/authStore';
 
@@ -16,9 +17,18 @@ export const useWishlist = () => {
 
   const addToWishlistMutation = useMutation<void, unknown, number | Book>({
     mutationFn: (payload: number | Book) => wishlistService.addToWishlist(payload),
-    onSuccess: () => {
+    onSuccess: async (_, payload) => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+      const bookTitle = typeof payload === 'number' ? 'Book' : payload.title;
       toast.success('Added to wishlist!');
+      
+      // Send notification
+      try {
+        await notificationService.send(`${bookTitle} added to your wishlist`, 'WISHLIST');
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      } catch (error) {
+        console.error('Failed to send notification:', error);
+      }
     },
     onError: () => toast.error('Failed to add to wishlist'),
   });
@@ -32,6 +42,14 @@ export const useWishlist = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       toast.success('Removed from wishlist');
+      
+      // Send notification
+      try {
+        notificationService.send('Item removed from your wishlist', 'WISHLIST');
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      } catch (error) {
+        console.error('Failed to send notification:', error);
+      }
     },
     onError: () => toast.error('Failed to remove from wishlist'),
   });

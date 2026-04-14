@@ -5,17 +5,18 @@ import { useAuthStore } from '../stores/authStore';
 export const useNotifications = () => {
   const { isAuthenticated } = useAuthStore();
 
-  const { data: notifications, refetch } = useQuery({
-    queryKey: ['notifications'],
+  const { data: notifications, refetch: refetchAll } = useQuery({
+    queryKey: ['notifications', 'all'],
     queryFn: notificationService.getAll,
     enabled: isAuthenticated,
+    refetchInterval: 5000, // Auto-refresh every 5 seconds
   });
 
-  const { data: unreadNotifications } = useQuery({
-    queryKey: ['notifications', 'unread'],
-    queryFn: notificationService.getUnread,
+  const { data: unreadCount } = useQuery({
+    queryKey: ['notifications', 'unreadCount'],
+    queryFn: notificationService.getUnreadCount,
     enabled: isAuthenticated,
-    refetchInterval: 10000,
+    refetchInterval: 5000, // Auto-refresh every 5 seconds
   });
 
   const queryClient = useQueryClient();
@@ -36,11 +37,10 @@ export const useNotifications = () => {
   });
 
   return {
-    notifications,
-    unreadNotifications,
-    unreadCount: unreadNotifications?.length || 0,
+    notifications: notifications || [],
+    unreadCount: unreadCount || 0,
     markAsRead: markAsReadMutation.mutate,
     markAllAsRead: markAllAsReadMutation.mutate,
-    refetch,
+    refetch: refetchAll,
   };
 };

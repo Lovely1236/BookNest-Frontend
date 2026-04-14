@@ -9,13 +9,22 @@ interface TopUpFormProps {
 
 export const TopUpForm: React.FC<TopUpFormProps> = ({ onSuccess }) => {
   const [amount, setAmount] = useState('');
-  const { mutate: topUp, isPending } = useTopUpWallet();
+  const { mutate: topUp, isPending, error, isError } = useTopUpWallet();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const val = parseFloat(amount);
-    if (!val || val <= 0) return;
-    topUp(val, { onSuccess });
+    if (!val || val <= 0) {
+      console.log('Invalid amount:', val);
+      return;
+    }
+    console.log('Submitting top up with amount:', val);
+    topUp(val, {
+      onSuccess: () => {
+        setAmount('');
+        onSuccess?.();
+      },
+    });
   };
 
   return (
@@ -52,6 +61,14 @@ export const TopUpForm: React.FC<TopUpFormProps> = ({ onSuccess }) => {
       >
         {isPending ? 'Processing...' : 'Add Money'}
       </button>
+
+      {isError && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">
+            {error?.message || 'Failed to add money. Please try again.'}
+          </p>
+        </div>
+      )}
     </form>
   );
 };

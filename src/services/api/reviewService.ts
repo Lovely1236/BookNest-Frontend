@@ -4,14 +4,14 @@ import { Review, CreateReviewPayload } from '../../types/review';
 
 export const reviewService = {
   getBookReviews: async (bookId: number): Promise<Review[]> => {
-    const { data } = await apiClient.get(`/reviews/book/${bookId}`);
+    const { data } = await apiClient.get(`/review/reviews/book/${bookId}`);
     return data;
   },
 
   createReview: async (payload: CreateReviewPayload): Promise<Review> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
-    const { data } = await apiClient.post('/reviews', {
+    const { data } = await apiClient.post('/review/reviews', {
       ...payload,
       userId: user.userId,
     });
@@ -19,19 +19,19 @@ export const reviewService = {
   },
 
   updateReview: async (reviewId: number, payload: Partial<CreateReviewPayload>): Promise<Review> => {
-    const { data } = await apiClient.put(`/reviews/${reviewId}`, payload);
+    const { data } = await apiClient.put(`/review/reviews/${reviewId}`, payload);
     return data;
   },
 
   deleteReview: async (reviewId: number): Promise<void> => {
-    await apiClient.delete(`/reviews/${reviewId}`);
+    await apiClient.delete(`/review/reviews/${reviewId}`);
   },
 
   canUserReview: async (bookId: number): Promise<boolean> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
     try {
-      const { data } = await apiClient.get(`/reviews/can-review/${bookId}`, {
+      const { data } = await apiClient.get(`/review/reviews/can-review/${bookId}`, {
         params: { userId: user.userId },
       });
       return data.canReview;
@@ -41,7 +41,7 @@ export const reviewService = {
   },
 
   getAllReviews: async (): Promise<Review[]> => {
-    const { data } = await apiClient.get('/reviews');
+    const { data } = await apiClient.get('/review/reviews');
     return data;
   },
 };

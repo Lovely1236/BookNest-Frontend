@@ -6,31 +6,43 @@ export const notificationService = {
   getAll: async (): Promise<Notification[]> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
-    const { data } = await apiClient.get(`/notifications/user/${user.userId}`);
+    const { data } = await apiClient.get(`/notification/notifications/user/${user.userId}`);
     return data;
   },
 
   getUnread: async (): Promise<Notification[]> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
-    const { data } = await apiClient.get(`/notifications/unread/${user.userId}`);
-    return data;
+    const { data } = await apiClient.get(`/notification/notifications/user/${user.userId}`);
+    return data.filter((n: Notification) => !n.read);
   },
 
   getUnreadCount: async (): Promise<number> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
-    const { data } = await apiClient.get(`/notifications/unread/${user.userId}`);
-    return typeof data === 'number' ? data : (data as any).count || 0;
+    const { data } = await apiClient.get(`/notification/notifications/unread/${user.userId}`);
+    return typeof data === 'number' ? data : 0;
   },
 
   markAsRead: async (notificationId: number): Promise<void> => {
-    await apiClient.put(`/notifications/read/${notificationId}`, {});
+    await apiClient.put(`/notification/notifications/read/${notificationId}`, {});
   },
 
   markAllAsRead: async (): Promise<void> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
-    await apiClient.put(`/notifications/readAll/${user.userId}`, {});
+    await apiClient.put(`/notification/notifications/readAll/${user.userId}`, {});
+  },
+
+  send: async (message: string, type: string = 'INFO'): Promise<Notification> => {
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.post(`/notification/notifications`, {
+      userId: user.userId,
+      type,
+      message,
+      read:false,
+    });
+    return data;
   },
 };

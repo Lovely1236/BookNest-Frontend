@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { useAllOrders, useUpdateOrderStatus } from '../hooks/useOrders';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '../utils/constants';
+import { adminService } from '../services/api/adminService';
 
 const STATUS_OPTIONS = ['PLACED', 'CONFIRMED', 'DISPATCHED', 'DELIVERED', 'CANCELLED'];
 
 export const OrderManagementPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
-  const { data, isLoading } = useAllOrders({ status: statusFilter || undefined });
-  const { mutate: updateStatus } = useUpdateOrderStatus();
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'orders', statusFilter],
+    queryFn: () => adminService.getOrders({ status: statusFilter || undefined }),
+  });
+  const { mutate: updateStatus } = useMutation({
+    mutationFn: ({ orderId, status }: { orderId: number; status: string }) =>
+      adminService.updateOrderStatus(orderId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      toast.success('Order status updated');
+    },
+    onError: () => toast.error('Failed to update order status'),
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 animate-fadeIn">

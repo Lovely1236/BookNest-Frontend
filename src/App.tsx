@@ -18,6 +18,7 @@ import { CartPage } from './pages/CartPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { OrderDetailPage } from './pages/OrderDetailPage';
+import { StripePaymentPage } from './pages/StripePaymentPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { WalletPage } from './pages/WalletPage';
 import { NotificationsPage } from './pages/NotificationsPage';
@@ -72,6 +73,7 @@ function App() {
             <Route path="/checkout" element={<AppLayout><ProtectedRoute><CheckoutPage /></ProtectedRoute></AppLayout>} />
             <Route path="/orders" element={<AppLayout><ProtectedRoute><OrdersPage /></ProtectedRoute></AppLayout>} />
             <Route path="/orders/:id" element={<AppLayout><ProtectedRoute><OrderDetailPage /></ProtectedRoute></AppLayout>} />
+            <Route path="/payment/stripe/:orderId" element={<AppLayout><ProtectedRoute><StripePaymentPage /></ProtectedRoute></AppLayout>} />
             <Route path="/wishlist" element={<AppLayout><ProtectedRoute><WishlistPage /></ProtectedRoute></AppLayout>} />
             <Route path="/wallet" element={<AppLayout><ProtectedRoute><WalletPage /></ProtectedRoute></AppLayout>} />
             <Route path="/notifications" element={<AppLayout><ProtectedRoute><NotificationsPage /></ProtectedRoute></AppLayout>} />

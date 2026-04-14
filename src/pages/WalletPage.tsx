@@ -9,6 +9,7 @@ export const WalletPage: React.FC = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const { data: wallet, isLoading } = useWallet();
   const { data: statementsData, isLoading: statementsLoading } = useWalletStatements();
+  // console.log(statementsData?.statements);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 animate-fadeIn">
@@ -30,7 +31,7 @@ export const WalletPage: React.FC = () => {
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Transaction History</h2>
           <TransactionHistory
-            statements={statementsData?.statements}
+            statements={statementsData}
             isLoading={statementsLoading}
           />
         </div>

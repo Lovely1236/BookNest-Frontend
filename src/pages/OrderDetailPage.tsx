@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useOrder, useCancelOrder } from '../hooks/useOrders';
 import { OrderTracking } from '../components/order/OrderTracking';
@@ -9,10 +9,21 @@ import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '../utils/constants';
 
 export const OrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const orderId = Number(id);
 
   const { data: order, isLoading } = useOrder(orderId);
   const { mutate: cancelOrder, isPending: isCancelling } = useCancelOrder();
+
+  const handleCancelOrder = () => {
+    cancelOrder(orderId, {
+      onSuccess: () => {
+        setTimeout(() => {
+          navigate('/orders');
+        }, 1000);
+      },
+    });
+  };
 
   if (isLoading) return <LoadingSpinner fullPage />;
   if (!order) return (
@@ -72,7 +83,13 @@ export const OrderDetailPage: React.FC = () => {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-500">Payment Mode</span>
-              <span className="font-medium">{order.modeOfPayment === 'COD' ? 'Cash on Delivery' : 'E-Wallet'}</span>
+              <span className="font-medium">
+                {order.modeOfPayment === 'COD' 
+                  ? 'Cash on Delivery' 
+                  : order.modeOfPayment === 'ONLINE' 
+                  ? 'E-Wallet Payment'
+                  : 'Stripe Payment'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Amount Paid</span>
@@ -96,7 +113,7 @@ export const OrderDetailPage: React.FC = () => {
 
         {canCancel && (
           <button
-            onClick={() => cancelOrder(orderId)}
+            onClick={handleCancelOrder}
             disabled={isCancelling}
             className="w-full py-3 border-2 border-red-500 text-red-500 font-semibold rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
           >

@@ -5,9 +5,9 @@ import { LoginForm } from '../components/auth/LoginForm';
 import { useAuthStore } from '../stores/authStore';
 
 export const LoginPage: React.FC = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isAdmin } = useAuthStore();
 
-  if (isAuthenticated) return <Navigate to="/" replace />;
+  if (isAuthenticated) return <Navigate to={isAdmin ? '/admin' : '/'} replace />;
 
   return (
     <div className="min-h-screen flex">

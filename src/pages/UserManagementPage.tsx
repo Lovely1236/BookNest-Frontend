@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search, User } from 'lucide-react';
-import apiClient from '../services/axios';
 import { User as UserType } from '../types/auth';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { formatDate } from '../utils/formatters';
+import { adminService } from '../services/api/adminService';
 
-const fetchUsers = async (): Promise<UserType[]> => {
-  const { data } = await apiClient.get('/admin/users');
-  return data;
-};
+const fetchUsers = async (): Promise<UserType[]> => adminService.getUsers();
 
 export const UserManagementPage: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -35,6 +32,12 @@ export const UserManagementPage: React.FC = () => {
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+
+      {!isLoading && (
+        <p className="text-sm text-gray-500 mb-4">
+          {filtered?.length ?? 0} users visible
+        </p>
+      )}
 
       {isLoading ? (
         <LoadingSpinner />

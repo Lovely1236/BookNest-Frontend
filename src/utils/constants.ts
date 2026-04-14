@@ -49,5 +49,6 @@ export const SORT_OPTIONS = [
 
 export const PAYMENT_MODES = [
   { value: 'COD', label: 'Cash on Delivery' },
-  { value: 'ONLINE', label: 'Pay from Wallet' },
+  { value: 'ONLINE', label: 'E-Wallet' },
+  { value: 'STRIPE', label: 'Stripe Payment' },
 ];

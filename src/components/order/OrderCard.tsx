@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Package, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Order } from '../../types/order';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '../../utils/constants';
@@ -10,6 +10,9 @@ interface OrderCardProps {
 }
 
 export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
+  const firstItem = order.items?.[0];
+  const bookCoverUrl = firstItem?.bookCoverUrl || `https://via.placeholder.com/40x56/3b82f6/ffffff?text=${encodeURIComponent((firstItem?.bookTitle || 'Order').substring(0, 2))}`;
+
   return (
     <Link
       to={`/orders/${order.orderId}`}
@@ -17,12 +20,13 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-            <Package className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+            <img src={bookCoverUrl} alt="Order book" className="w-full h-full object-cover" />
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-900">Order #{order.orderId}</p>
             <p className="text-xs text-gray-500">{formatDate(order.orderDate)}</p>
+            {order.items && <p className="text-xs text-gray-400 mt-0.5">{order.items.length} item(s)</p>}
           </div>
         </div>
 

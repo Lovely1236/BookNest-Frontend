@@ -1,5 +1,11 @@
 import apiClient from '../axios';
 import { User, AuthResponse, LoginPayload, RegisterPayload } from '../../types/auth';
+import { normalizeUser } from '../../utils/auth';
+
+const normalizeAuthResponse = (response: AuthResponse): AuthResponse => ({
+  ...response,
+  user: normalizeUser(response.user),
+});
 
 export const authService = {
   register: async (payload: RegisterPayload): Promise<AuthResponse> => {
@@ -7,7 +13,7 @@ export const authService = {
       console.log('🔄 Starting registration with payload:', payload);
       const { data } = await apiClient.post('/auth/register', payload);
       console.log('✅ Registration successful:', data);
-      return data;
+      return normalizeAuthResponse(data);
     } catch (error) {
       console.error('❌ Registration error:', error);
       throw error;
@@ -19,7 +25,7 @@ export const authService = {
       console.log('🔄 Starting login with email:', payload.email);
       const { data } = await apiClient.post('/auth/login', payload);
       console.log('✅ Login successful:', data);
-      return data;
+      return normalizeAuthResponse(data);
     } catch (error) {
       console.error('❌ Login error:', error);
       throw error;
@@ -31,7 +37,7 @@ export const authService = {
       console.log('🔄 Processing GitHub callback with code:', code);
       const { data } = await apiClient.post('/auth/github/callback', { code });
       console.log('✅ GitHub callback successful:', data);
-      return data;
+      return normalizeAuthResponse(data);
     } catch (error) {
       console.error('❌ GitHub callback error:', error);
       throw error;
@@ -43,7 +49,7 @@ export const authService = {
       console.log('🔄 Fetching current user profile');
       const { data } = await apiClient.get('/auth/profile');
       console.log('✅ User profile fetched:', data);
-      return data;
+      return normalizeUser(data);
     } catch (error) {
       console.error('❌ Get user profile error:', error);
       throw error;
@@ -55,7 +61,7 @@ export const authService = {
       console.log('🔄 Updating profile with:', updates);
       const { data } = await apiClient.put('/auth/profile', updates);
       console.log('✅ Profile updated successfully:', data);
-      return data;
+      return normalizeUser(data);
     } catch (error) {
       console.error('❌ Update profile error:', error);
       throw error;
