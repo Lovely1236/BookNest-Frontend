@@ -44,14 +44,22 @@ export const BookDetailPage: React.FC = () => {
         {/* Cover */}
         <div className="lg:col-span-1">
           <div className="aspect-[2/3] max-w-xs mx-auto bg-gray-100 rounded-xl overflow-hidden shadow-lg">
-            <img
-              src={book.coverImageUrl || `https://via.placeholder.com/300x450/3b82f6/ffffff?text=${encodeURIComponent(book.title.substring(0, 2))}`}
-              alt={book.title}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = `https://via.placeholder.com/300x450/3b82f6/ffffff?text=${encodeURIComponent(book.title.substring(0, 2))}`;
-              }}
-            />
+            {(() => {
+              const placeholder = encodeURIComponent(book.title.substring(0, 2));
+              const placeholderUrl = `https://via.placeholder.com/300x450/3b82f6/ffffff?text=${placeholder}`;
+              return (
+                <img
+                  src={book.coverImageUrl || placeholderUrl}
+                  alt={book.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    if (img.src !== placeholderUrl) img.src = placeholderUrl;
+                  }}
+                />
+              );
+            })()}
           </div>
         </div>
 
@@ -106,7 +114,7 @@ export const BookDetailPage: React.FC = () => {
                 onClick={() =>
                   inWishlist
                     ? removeFromWishlist(book.bookId)
-                    : addToWishlist(book.bookId)
+                    : addToWishlist(book)
                 }
                 className={`flex items-center gap-2 px-6 py-3 border-2 font-semibold rounded-lg transition-colors ${
                   inWishlist

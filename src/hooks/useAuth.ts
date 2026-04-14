@@ -12,11 +12,13 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: (payload: LoginPayload) => authService.login(payload),
     onSuccess: (data) => {
+      console.log('✅ Login mutation success');
       login(data.user, data.token);
       toast.success(`Welcome back, ${data.user.fullName}!`);
       navigate(data.user.role === 'ADMIN' ? '/admin' : '/');
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('❌ Login mutation error:', error);
       toast.error('Invalid email or password');
     },
   });
@@ -24,11 +26,13 @@ export const useAuth = () => {
   const registerMutation = useMutation({
     mutationFn: (payload: RegisterPayload) => authService.register(payload),
     onSuccess: (data) => {
+      console.log('✅ Register mutation success');
       login(data.user, data.token);
       toast.success('Account created successfully!');
-      navigate('/');
+      navigate('/login');
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('❌ Register mutation error:', error);
       toast.error('Registration failed. Please try again.');
     },
   });
@@ -36,6 +40,7 @@ export const useAuth = () => {
   const logoutMutation = useMutation({
     mutationFn: authService.logout,
     onSettled: () => {
+      console.log('✅ Logout completed');
       storeLogout();
       toast.success('Logged out successfully');
       navigate('/login');

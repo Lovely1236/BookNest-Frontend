@@ -1,20 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { wishlistService } from '../services/api/wishlistService';
+import { Book } from '../types/book';
 import { useAuthStore } from '../stores/authStore';
 
 export const useWishlist = () => {
   const { isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
 
-  const { data: wishlist, isLoading } = useQuery({
+  const { data: wishlist, isLoading } = useQuery<Book[]>({
     queryKey: ['wishlist'],
     queryFn: wishlistService.getWishlist,
     enabled: isAuthenticated,
   });
 
-  const addToWishlistMutation = useMutation({
-    mutationFn: (bookId: number) => wishlistService.addToWishlist(bookId),
+  const addToWishlistMutation = useMutation<void, unknown, number | Book>({
+    mutationFn: (payload: number | Book) => wishlistService.addToWishlist(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       toast.success('Added to wishlist!');
@@ -23,7 +24,11 @@ export const useWishlist = () => {
   });
 
   const removeFromWishlistMutation = useMutation({
-    mutationFn: (bookId: number) => wishlistService.removeFromWishlist(bookId),
+    mutationFn: (id: number) => {
+      // `id` may be a bookId (from catalog) or an itemId (from wishlist). Prefer resolving to itemId using cached wishlist.
+      const itemId = wishlist?.find((b) => b.bookId === id)?.itemId ?? id;
+      return wishlistService.removeFromWishlist(itemId as number);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       toast.success('Removed from wishlist');

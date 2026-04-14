@@ -1,9 +1,12 @@
 import apiClient from '../axios';
+import { useAuthStore } from '../../stores/authStore';
 import { Order, PlaceOrderPayload } from '../../types/order';
 
 export const orderService = {
   getMyOrders: async (): Promise<Order[]> => {
-    const { data } = await apiClient.get('/orders/my-orders');
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.get(`/orders/user/${user.userId}`);
     return data;
   },
 
@@ -13,17 +16,19 @@ export const orderService = {
   },
 
   placeOrder: async (payload: PlaceOrderPayload): Promise<Order> => {
-    const { data } = await apiClient.post('/orders/place', payload);
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.post('/orders/place', { ...payload, userId: user.userId });
     return data;
   },
 
   payOnline: async (payload: { orderId: number; walletId: number }): Promise<Order> => {
-    const { data } = await apiClient.post('/orders/online-payment', payload);
+    const { data } = await apiClient.post('/orders/online', payload);
     return data;
   },
 
   cancelOrder: async (orderId: number): Promise<Order> => {
-    const { data } = await apiClient.put(`/orders/${orderId}/cancel`);
+    const { data } = await apiClient.put(`/orders/${orderId}/cancel`, {});
     return data;
   },
 
@@ -39,7 +44,7 @@ export const orderService = {
   },
 
   updateStatus: async (orderId: number, status: string): Promise<Order> => {
-    const { data } = await apiClient.put(`/orders/${orderId}/status`, { status });
+    const { data } = await apiClient.put(`/orders/status/${orderId}`, { status });
     return data;
   },
 };

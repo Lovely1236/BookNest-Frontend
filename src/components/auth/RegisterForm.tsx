@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { registerSchema, RegisterFormData } from '../../utils/validation';
 import { useAuth } from '../../hooks/useAuth';
 import { OAuthButton } from './OAuthButton';
@@ -39,6 +39,7 @@ export const RegisterForm: React.FC = () => {
       fullName: data.fullName,
       email: data.email,
       password: data.password,
+      mobile: data.mobile,
     });
 
   return (
@@ -107,20 +108,20 @@ export const RegisterForm: React.FC = () => {
           {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
         </div>
 
-        {/* Confirm Password */}
+        {/* Mobile */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
-              {...register('confirmPassword')}
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
+              {...register('mobile')}
+              type="tel"
+              autoComplete="tel"
+              placeholder="9876543210"
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          {errors.confirmPassword && <p className="text-xs text-red-500 mt-1">{errors.confirmPassword.message}</p>}
+          {errors.mobile && <p className="text-xs text-red-500 mt-1">{errors.mobile.message}</p>}
         </div>
 
         <button

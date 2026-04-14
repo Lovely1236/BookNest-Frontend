@@ -1,5 +1,6 @@
 export interface Book {
   bookId: number;
+  itemId?: number;
   title: string;
   author: string;
   isbn: string;

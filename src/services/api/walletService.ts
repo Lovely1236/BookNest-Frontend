@@ -1,24 +1,33 @@
 import apiClient from '../axios';
+import { useAuthStore } from '../../stores/authStore';
 import { Wallet, Statement } from '../../types/wallet';
 
 export const walletService = {
   getWallet: async (): Promise<Wallet> => {
-    const { data } = await apiClient.get('/wallet');
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.get(`/wallet/${user.userId}`);
     return data;
   },
 
   getBalance: async (): Promise<Wallet> => {
-    const { data } = await apiClient.get('/wallet/balance');
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.get(`/wallet/${user.userId}`);
     return data;
   },
 
   topUp: async (amount: number): Promise<Wallet> => {
-    const { data } = await apiClient.post('/wallet/topup', { amount });
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.post(`/wallet/addMoney/${user.userId}`, {}, { params: { amount } });
     return data;
   },
 
   debit: async (orderId: number, amount: number): Promise<Wallet> => {
-    const { data } = await apiClient.post('/wallet/debit', { orderId, amount });
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.post(`/wallet/${user.userId}/debit`, { orderId, amount });
     return data;
   },
 
@@ -28,7 +37,9 @@ export const walletService = {
     page?: number;
     limit?: number;
   }): Promise<{ statements: Statement[]; total: number }> => {
-    const { data } = await apiClient.get('/wallet/statements', { params: filters });
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.get(`/wallet/statements/${user.userId}`, { params: filters });
     return data;
   },
 };

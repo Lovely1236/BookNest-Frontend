@@ -1,4 +1,5 @@
 import apiClient from '../axios';
+import { useAuthStore } from '../../stores/authStore';
 import { Review, CreateReviewPayload } from '../../types/review';
 
 export const reviewService = {
@@ -8,7 +9,12 @@ export const reviewService = {
   },
 
   createReview: async (payload: CreateReviewPayload): Promise<Review> => {
-    const { data } = await apiClient.post('/reviews', payload);
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    const { data } = await apiClient.post('/reviews', {
+      ...payload,
+      userId: user.userId,
+    });
     return data;
   },
 
@@ -22,8 +28,16 @@ export const reviewService = {
   },
 
   canUserReview: async (bookId: number): Promise<boolean> => {
-    const { data } = await apiClient.get(`/reviews/can-review/${bookId}`);
-    return data.canReview;
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+    try {
+      const { data } = await apiClient.get(`/reviews/can-review/${bookId}`, {
+        params: { userId: user.userId },
+      });
+      return data.canReview;
+    } catch {
+      return false;
+    }
   },
 
   getAllReviews: async (): Promise<Review[]> => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, Eye } from 'lucide-react';
 import { Book } from '../../types/book';
@@ -17,6 +17,13 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const { addToCart, isAdding } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
+  const placeholder = useMemo(
+    () => `https://via.placeholder.com/200x300/3b82f6/ffffff?text=${encodeURIComponent(
+      book.title.substring(0, 2)
+    )}`,
+    [book.title]
+  );
+
   const inWishlist = isInWishlist(book.bookId);
   const outOfStock = book.stock === 0;
 
@@ -32,7 +39,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     if (inWishlist) {
       removeFromWishlist(book.bookId);
     } else {
-      addToWishlist(book.bookId);
+      addToWishlist(book);
     }
   };
 
@@ -44,11 +51,13 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       {/* Cover */}
       <div className="relative aspect-[2/3] bg-gray-100 overflow-hidden">
         <img
-          src={book.coverImageUrl || `https://via.placeholder.com/200x300/3b82f6/ffffff?text=${encodeURIComponent(book.title.substring(0, 2))}`}
+          src={book.coverImageUrl || placeholder}
           alt={book.title}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = `https://via.placeholder.com/200x300/3b82f6/ffffff?text=${encodeURIComponent(book.title.substring(0, 2))}`;
+            const img = e.target as HTMLImageElement;
+            if (img.src !== placeholder) img.src = placeholder;
           }}
         />
 
