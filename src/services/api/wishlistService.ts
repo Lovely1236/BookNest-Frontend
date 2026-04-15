@@ -27,7 +27,7 @@ export const wishlistService = {
   getWishlist: async (): Promise<Book[]> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
-    const { data } = await apiClient.get<WishlistApiResponse>(`/wishlist/${user.userId}`);
+    const { data } = await apiClient.get<WishlistApiResponse>(`/wishlist/wishlist/${user.userId}`);
 
     // Normalize response: backend may return either an array of Book or an object with `books` array
     const rawBooks: WishlistBook[] = Array.isArray(data)
@@ -85,13 +85,13 @@ export const wishlistService = {
       payload.bookPrice = obj.bookPrice ?? obj.price ?? null;
     }
 
-    await apiClient.post(`/wishlist/add/${user.userId}`, payload);
+    await apiClient.post(`/wishlist/wishlist/add/${user.userId}`, payload);
   },
 
   removeFromWishlist: async (itemId: number): Promise<void> => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User not authenticated');
-    await apiClient.delete(`/wishlist/remove/${user.userId}/${itemId}`);
+    await apiClient.delete(`/wishlist/wishlist/remove/${user.userId}/${itemId}`);
   },
 
   isInWishlist: async (bookId: number): Promise<boolean> => {
