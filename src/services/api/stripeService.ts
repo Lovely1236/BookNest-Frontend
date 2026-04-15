@@ -10,7 +10,7 @@ export interface PaymentIntentResponse {
 export const stripeService = {
   createPaymentIntent: async (orderId: number): Promise<PaymentIntentResponse> => {
     const { data } = await apiClient.post<PaymentIntentResponse>(
-      `/orders/${orderId}/payment-intent`,
+      `/order/orders/${orderId}/payment-intent`,
       {}
     );
     return data;
@@ -18,7 +18,7 @@ export const stripeService = {
 
   confirmPayment: async (orderId: number, paymentIntentId: string): Promise<{ status: string; message: string }> => {
     const { data } = await apiClient.post<{ status: string; message: string }>(
-      `/orders/${orderId}/confirm-payment`,
+      `/order/orders/${orderId}/confirm-payment`,
       { paymentIntentId }
     );
     return data;
