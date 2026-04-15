@@ -5,6 +5,7 @@ import { ArrowRight, BookOpen, ShoppingBag, TrendingUp, Users } from 'lucide-rea
 import { analyticsService } from '../services/api/analyticsService';
 import { SalesChart } from '../components/dashboard/SalesChart';
 import { TopBooksChart } from '../components/dashboard/TopBooksChart';
+import { UsersList } from '../components/dashboard/UsersList';
 import { StockAlert } from '../components/dashboard/StockAlert';
 import { formatCurrency } from '../utils/formatters';
 import { adminService } from '../services/api/adminService';
@@ -121,12 +122,10 @@ export const AdminDashboardPage: React.FC = () => {
         <TopBooksChart />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-        <div className="max-w-lg">
-          <StockAlert />
-        </div>
-        <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <UsersList />
+        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Recently managed books</h2>
               <p className="text-sm text-slate-500">Quick view into the catalog flowing through admin-service.</p>
@@ -136,9 +135,9 @@ export const AdminDashboardPage: React.FC = () => {
             </Link>
           </div>
 
-          <div className="mt-5 space-y-4">
+          <div className="space-y-3">
             {(catalog?.books ?? []).map((book) => (
-              <div key={book.bookId} className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3">
+              <div key={book.bookId} className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3 hover:border-slate-200 hover:bg-slate-50 transition">
                 <div>
                   <p className="font-medium text-slate-900">{book.title}</p>
                   <p className="text-sm text-slate-500">{book.author}</p>
@@ -150,12 +149,16 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             ))}
             {(catalog?.books?.length ?? 0) === 0 && (
-              <p className="rounded-2xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+              <p className="rounded-lg bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
                 No recent catalog entries yet.
               </p>
             )}
           </div>
-        </section>
+        </div>
+      </div>
+
+      <div className="grid gap-6">
+        <StockAlert />
       </div>
     </div>
   );
