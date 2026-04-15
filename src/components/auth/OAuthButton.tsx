@@ -1,15 +1,11 @@
 import React from 'react';
 import { GitFork } from 'lucide-react';
-import { GITHUB_OAUTH_ID, GITHUB_REDIRECT_URI } from '../../utils/constants';
 
 export const OAuthButton: React.FC = () => {
   const handleGitHubLogin = () => {
-    const params = new URLSearchParams({
-      client_id: GITHUB_OAUTH_ID,
-      redirect_uri: GITHUB_REDIRECT_URI,
-      scope: 'user:email',
-    });
-    window.location.href = `https://github.com/login/oauth/authorize?${params}`;
+    // Redirect to auth-service OAuth endpoint through the API Gateway
+    // Auth-service will handle the GitHub OAuth flow and redirect back with JWT token
+    window.location.href = 'http://localhost:8080/api/auth/oauth2/authorization/github';
   };
 
   return (

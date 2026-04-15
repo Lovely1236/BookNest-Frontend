@@ -29,6 +29,7 @@ import { OrderManagementPage } from './pages/OrderManagementPage';
 import { UserManagementPage } from './pages/UserManagementPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { OAuthCallbackPage } from './pages/OAuthCallbackPage';
 
 import React from 'react';
 
@@ -61,6 +62,7 @@ function App() {
             {/* Auth pages */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/auth/callback" element={<OAuthCallbackPage />} />
 
             {/* Public pages */}
             <Route path="/" element={<AppLayout><Home /></AppLayout>} />
