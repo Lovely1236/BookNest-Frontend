@@ -7,7 +7,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { analyticsService } from '../../services/api/analyticsService';
