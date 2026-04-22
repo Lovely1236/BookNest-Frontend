@@ -11,6 +11,7 @@ interface OrderCardProps {
 
 export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   const firstItem = order.items?.[0];
+  const bookTitle = firstItem?.bookTitle || 'Book details unavailable';
   const bookCoverUrl = firstItem?.bookCoverUrl || `https://via.placeholder.com/40x56/3b82f6/ffffff?text=${encodeURIComponent((firstItem?.bookTitle || 'Order').substring(0, 2))}`;
 
   return (
@@ -26,6 +27,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           <div>
             <p className="text-sm font-semibold text-gray-900">Order #{order.orderId}</p>
             <p className="text-xs text-gray-500">{formatDate(order.orderDate)}</p>
+            <p className="text-xs text-gray-700 mt-0.5">{bookTitle}</p>
             {order.items && <p className="text-xs text-gray-400 mt-0.5">{order.items.length} item(s)</p>}
           </div>
         </div>
